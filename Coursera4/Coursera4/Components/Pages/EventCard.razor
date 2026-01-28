@@ -1,0 +1,24 @@
+﻿@* EventCard.razor *@
+<div class="card" style="width: 18rem; margin: 10px;">
+    <div class="card-body">
+        <h5 class="card-title">@EventName</h5>
+        <div class="mb-3">
+            <label>Event Name:</label>
+            <input @bind="EventName" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Date:</label>
+            <input type="date" @bind="EventDate" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Location:</label>
+            <input @bind="Location" class="form-control" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string EventName { get; set; } = "New Event";
+    [Parameter] public DateTime EventDate { get; set; } = DateTime.Now;
+    [Parameter] public string Location { get; set; } = "TBD";
+}
