@@ -1,2 +1,64 @@
 ﻿@page "/registration"
-<h3>Register for an Event</h3>
+@using Coursera4.Models
+@using Coursera4.Services
+@using System.ComponentModel.DataAnnotations
+@inject UserSessionService Session
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<h3>User Registration</h3>
+
+@if (Session.IsRegistered)
+{
+    <div class="alert alert-success">
+        <h4>Welcome back, @Session.UserName!</h4>
+        <p>You have currently joined @Session.GetAttendanceCount() events.</p>
+        <a href="/" class="btn btn-primary">Browse Events</a>
+    </div>
+}
+else
+{
+    <div class="card p-4" style="max-width: 500px;">
+        <EditForm Model="@registrationModel" OnValidSubmit="HandleRegistration">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label>Full Name</label>
+                <InputText @bind-Value="registrationModel.Name" class="form-control" />
+                <ValidationMessage For="@(() => registrationModel.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label>Email Address</label>
+                <InputText @bind-Value="registrationModel.Email" class="form-control" />
+                <ValidationMessage For="@(() => registrationModel.Email)" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Create Profile</button>
+        </EditForm>
+    </div>
+}
+
+@code {
+    private RegistrationModel registrationModel = new();
+
+    private void HandleRegistration()
+    {
+        // Save state to the service
+        Session.RegisterUser(registrationModel.Name, registrationModel.Email);
+        // Redirect to home after 1 second (optional UX)
+        Nav.NavigateTo("/");
+    }
+
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(20, ErrorMessage = "Name is too long")]
+        public string Name { get; set; } = "";
+
+        [Required]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = "";
+    }
+}

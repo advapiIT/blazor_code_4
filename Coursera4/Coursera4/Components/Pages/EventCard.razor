@@ -1,24 +1,22 @@
-﻿@* EventCard.razor *@
-<div class="card" style="width: 18rem; margin: 10px;">
+﻿@using Coursera4.Models
+@using Coursera4.Models.Coursera4.Models
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="card mb-3 shadow-sm" style="width: 100%;">
     <div class="card-body">
-        <h5 class="card-title">@EventName</h5>
-        <div class="mb-3">
-            <label>Event Name:</label>
-            <input @bind="EventName" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label>Date:</label>
-            <input type="date" @bind="EventDate" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label>Location:</label>
-            <input @bind="Location" class="form-control" />
-        </div>
+        @* This check ensures we don't crash if data is missing *@
+        @if (Event != null)
+        {
+            <h5 class="card-title">@Event.EventName</h5>
+            <p class="text-muted">@Event.Location</p>
+            <p>@Event.EventDate.ToShortDateString()</p>
+
+            <a href="details/@Event.EventId" class="btn btn-primary btn-sm">View Details</a>
+        }
     </div>
 </div>
 
 @code {
-    [Parameter] public string EventName { get; set; } = "New Event";
-    [Parameter] public DateTime EventDate { get; set; } = DateTime.Now;
-    [Parameter] public string Location { get; set; } = "TBD";
+    [Parameter]
+    public EventModel Event { get; set; } = new();
 }

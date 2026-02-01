@@ -1,7 +1,71 @@
 ﻿@page "/details/{Id:int}"
-<h3>Event Details</h3>
-<p>Viewing details for Event ID: @Id</p>
+@using Coursera4.Models
+@using Coursera4.Models.Coursera4.Models
+@using Coursera4.Services
+@inject NavigationManager Nav
+@inject UserSessionService Session
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    @if (currentEvent != null)
+    {
+        <div class="card text-center">
+            <div class="card-header">
+                @if (Session.IsRegistered)
+                {
+                    <span>Welcome, @Session.UserName</span>
+                }
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@currentEvent.EventName</h5>
+                <p class="card-text">@currentEvent.Location | @currentEvent.EventDate.ToShortDateString()</p>
+
+                @* ATTENDANCE TRACKER LOGIC *@
+                @if (Session.HasJoined(currentEvent.EventId))
+                {
+                    <button class="btn btn-success" disabled>✔ You are attending</button>
+                }
+                else
+                {
+                    <button class="btn btn-warning" @onclick="JoinEvent">Join this Event</button>
+                }
+
+                <br /><br />
+                <a href="/" class="btn btn-outline-primary">Back to List</a>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
     [Parameter] public int Id { get; set; }
+    private EventModel? currentEvent;
+
+    protected override void OnInitialized()
+    {
+        // Mock Data
+        if (Id > 0 && Id <= 1000)
+        {
+            currentEvent = new EventModel
+            {
+                EventId = Id,
+                EventName = $"Corporate Event #{Id}",
+                Location = "Convention Center",
+                EventDate = DateTime.Now.AddDays(Id)
+            };
+        }
+    }
+
+    private void JoinEvent()
+    {
+        if (!Session.IsRegistered)
+        {
+            // If not logged in, force registration
+            Nav.NavigateTo("/registration");
+        }
+        else
+        {
+            Session.JoinEvent(Id);
+        }
+    }
 }
